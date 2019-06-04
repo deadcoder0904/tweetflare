@@ -1,0 +1,46 @@
+version: '3'
+services:
+  redis:
+    image: redis:5-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    hostname: redis
+    networks:
+      - web_api
+    volumes:
+      - ./redis:/data
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - '6001:4000'
+    volumes:
+      - ./server:/usr/app
+      - /usr/app/node_modules
+    depends_on:
+      - redis
+    environment:
+      - RHOST=redis
+    networks:
+      - web_api
+
+  # client:
+  #   depends_on:
+  #     - api
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - '8080:8080'
+  #   volumes:
+  #     - ./client:/usr/vue
+  #     - /usr/vue/node_modules
+  #   networks:
+  #     - web_api
+  #   links:
+  #     - api
+
+networks:
+  web_api:
+    driver: bridge

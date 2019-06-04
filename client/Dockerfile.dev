@@ -1,0 +1,15 @@
+# Dockerfile model from: https://jonathanmh.com/deploying-a-nuxt-js-app-with-docker/
+
+FROM node:12.2-alpine
+
+# create and define destination directory
+WORKDIR /usr/vue
+ENV HOST 0.0.0.0
+
+# copy the package json to install node dependencies
+COPY package.json .
+RUN npm install --quiet
+COPY . .
+
+# start the app
+CMD [ "npm", "run", "serve"]
